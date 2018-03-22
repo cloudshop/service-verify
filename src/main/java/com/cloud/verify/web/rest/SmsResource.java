@@ -9,16 +9,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotNull;
 import java.awt.image.BufferedImage;
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -34,12 +31,12 @@ public class SmsResource {
     * 发送短信验证码
     * */
     @GetMapping("/initSmsCode")
-    public ResponseEntity<Map> initSmsCode(@RequestParam("phone") String phone)throws Exception{
-        if(StringUtils.isBlank(phone)){
+    public ResponseEntity<Object> initSmsCode(@RequestParam("phone") String phone)throws Exception{
+            if(StringUtils.isBlank(phone)){
                 throw new Exception("电话号码为空");
-        }
-        Map result=smsService.initAndSendSmsCode(phone);
-        return new ResponseEntity<Map>(result, HttpStatus.OK);
+            }
+            Map result=smsService.initAndSendSmsCode(phone);
+            return new ResponseEntity<Object>(result, HttpStatus.OK);
     }
 
     /*
@@ -70,5 +67,15 @@ public class SmsResource {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    /**短信验证
+     * @param param {"phone":"","smsCode",""}
+     * @return {"message":""success,"content":"验证码正确"}
+     * */
+    @PostMapping("/smsValidate")
+    public ResponseEntity<Object> smsValidate(@NotNull @RequestBody Map param)throws Exception{
+            Map result=smsService.smsValidate(param);
+            return new ResponseEntity<Object>(result,HttpStatus.OK);
     }
 }

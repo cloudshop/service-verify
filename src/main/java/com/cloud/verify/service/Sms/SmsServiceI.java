@@ -16,4 +16,6 @@ public interface SmsServiceI {
      * @return 生成的图像数据
      * */
     public BufferedImage getImage();
+
+    public Map smsValidate(Map param)throws Exception;
 }

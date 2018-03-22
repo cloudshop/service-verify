@@ -1,6 +1,9 @@
 package com.cloud.verify.service.Sms;
 
+import com.cloud.verify.config.SmsConstents;
 import com.cloud.verify.web.rest.util.VerifyCodeUtil;
+import org.apache.commons.lang.StringUtils;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
@@ -47,5 +50,27 @@ public class SmsServiceImpl implements SmsServiceI{
          //生成的图像数据
          return verifyCodeUtil.getImage(verifyCode);
      }
+
+    @Override
+    public Map smsValidate(Map param) throws Exception {
+         String flag="failed";
+         String content="";
+         Object smsCode=redisTemplate.boundValueOps("sms_"+param.get("phone")).get();
+         String currentSmsCode=param.get("smsCode").toString();
+         param.clear();
+         if (smsCode==null){
+             content= SmsConstents.SMS_VALIDATE_TIMEOUT;
+         }else {
+             if (!smsCode.equals(currentSmsCode)){
+                 content=SmsConstents.SMS_VALIDATE_WRONG;
+             }else {
+                 flag="success";
+                 content=SmsConstents.SMS_VALIDATE_RIGHT;
+             }
+         }
+         param.put("message",flag);
+         param.put("content",content);
+         return param;
+    }
 
 }
