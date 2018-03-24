@@ -1,8 +1,9 @@
 package com.cloud.verify.web.rest;
 
 import com.cloud.verify.service.Sms.SmsServiceI;
-import com.sun.image.codec.jpeg.JPEGCodec;
-import com.sun.image.codec.jpeg.JPEGImageEncoder;
+
+
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
@@ -25,7 +27,6 @@ public class SmsResource {
 
     @Autowired
     SmsServiceI smsService;
-
 
     /*
     * 发送短信验证码
@@ -43,7 +44,7 @@ public class SmsResource {
     * 生成图形验证码
     * */
     @GetMapping("/initImageCode")
-    public void initCharAndNumCode( HttpServletResponse response){
+    public void initCharAndNumCode( HttpServletResponse response) {
         //将ContentType设为"image/jpeg"，让浏览器识别图像格式。
         response.setContentType("image/jpeg");
         //设置页面不缓存
@@ -51,24 +52,20 @@ public class SmsResource {
         response.setHeader("Cache-Control", "no-cache");
         response.setDateHeader("Expires", 2000);
 
-        try{
+        try {
             //获得验证码的图像数据
             BufferedImage bi = smsService.getImage();
             //获得Servlet输出流
             ServletOutputStream outStream = response.getOutputStream();
-            //创建可用来将图像数据编码为JPEG数据流的编码器
-            JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(outStream);
-            //将图像数据进行编码
-            encoder.encode(bi);
+            ImageIO.write(bi, "jpeg", outStream);
             //强行将缓冲区的内容输入到页面
             outStream.flush();
             //关闭输出流
             outStream.close();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
     /**短信验证
      * @param param {"phone":"","smsCode",""}
      * @return {"message":""success,"content":"验证码正确"}
