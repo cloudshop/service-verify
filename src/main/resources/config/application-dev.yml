@@ -120,7 +120,7 @@ liquibase:
 #        key-alias: verify
 # ===================================================================
 server:
-    port: 8103
+    port: 8132
 
 # ===================================================================
 # JHipster specific properties
@@ -156,7 +156,7 @@ jhipster:
             client-secret: internal
     mail: # specific JHipster mail property, for standard properties see MailProperties
         from: verify@192.168.1.10
-        base-url: http://192.168.1.10:8103
+        base-url: http://192.168.1.10:8132
     metrics: # DropWizard Metrics configuration, used by MetricsConfiguration
         jmx.enabled: true
         graphite: # Use the "graphite" Maven profile to have the Graphite dependencies
