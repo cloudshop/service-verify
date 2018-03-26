@@ -21,9 +21,9 @@ import java.awt.image.BufferedImage;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/sms")
-public class SmsResource {
-    private static final Logger LOGGER= LoggerFactory.getLogger(SmsResource.class);
+@RequestMapping("/api")
+public class VerifyResource {
+    private static final Logger LOGGER= LoggerFactory.getLogger(VerifyResource.class);
 
     @Autowired
     SmsServiceI smsService;
@@ -31,8 +31,8 @@ public class SmsResource {
     /*
     * 发送短信验证码
     * */
-    @GetMapping("/initSmsCode")
-    public ResponseEntity<Object> initSmsCode(@RequestParam("phone") String phone)throws Exception{
+    @RequestMapping(value = "/smsCode",method = RequestMethod.GET)
+    public ResponseEntity<Object> smsCode(@RequestParam("phone") String phone)throws Exception{
             if(StringUtils.isBlank(phone)){
                 throw new Exception("电话号码为空");
             }
@@ -43,8 +43,8 @@ public class SmsResource {
     /*
     * 生成图形验证码
     * */
-    @GetMapping("/initImageCode")
-    public void initCharAndNumCode( HttpServletResponse response) {
+    @RequestMapping(value = "/imageCode",method = RequestMethod.GET)
+    public void charAndNumCode( HttpServletResponse response) {
         //将ContentType设为"image/jpeg"，让浏览器识别图像格式。
         response.setContentType("image/jpeg");
         //设置页面不缓存
@@ -66,11 +66,12 @@ public class SmsResource {
             e.printStackTrace();
         }
     }
+
     /**短信验证
      * @param param {"phone":"","smsCode",""}
      * @return {"message":""success,"content":"验证码正确"}
      * */
-    @PostMapping("/smsValidate")
+    @RequestMapping(value = "/smsValidate",method = RequestMethod.POST)
     public ResponseEntity<Object> smsValidate(@NotNull @RequestBody Map param)throws Exception{
             Map result=smsService.smsValidate(param);
             return new ResponseEntity<Object>(result,HttpStatus.OK);
