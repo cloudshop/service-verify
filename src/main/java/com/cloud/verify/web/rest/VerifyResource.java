@@ -3,14 +3,17 @@ package com.cloud.verify.web.rest;
 import com.cloud.verify.service.Sms.SmsServiceI;
 
 
-
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.spring.web.json.Json;
 
 
 import javax.imageio.ImageIO;
@@ -32,12 +35,22 @@ public class VerifyResource {
     * 发送短信验证码
     * */
     @RequestMapping(value = "/smsCode",method = RequestMethod.GET)
-    public ResponseEntity<Object> smsCode(@RequestParam("phone") String phone)throws Exception{
+    public ResponseEntity<Object> smsCode(@RequestParam("phone") String phone,@RequestParam("callback") String jsonpCallback)throws Exception{
             if(StringUtils.isBlank(phone)){
                 throw new Exception("电话号码为空");
             }
             Map result=smsService.initAndSendSmsCode(phone);
-            return new ResponseEntity<Object>(result, HttpStatus.OK);
+            JSONObject jsonObject=new JSONObject();
+            jsonObject.put("content",result.get("content"));
+            jsonObject.put("target",result.get("target"));
+            if(StringUtils.isNotBlank(jsonpCallback)){//处理jsonp跨域
+                String jsonpData=jsonpCallback+"("+jsonObject+")";
+                return ResponseEntity.ok()
+                    .header("Access-Control-Allow-Origin","*")
+                    .header("Content-Type","application/x-javascript;charset=UTF-8")
+                    .body(jsonpData);
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(jsonObject);
     }
 
     /*
