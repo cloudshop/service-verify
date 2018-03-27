@@ -34,7 +34,7 @@ public class VerifyResource {
     /*
     * 发送短信验证码
     * */
-    @RequestMapping(value = "/smsCode",method = RequestMethod.GET)
+    @RequestMapping(value = "/verify/smscode",method = RequestMethod.GET)
     public ResponseEntity<Object> smsCode(@RequestParam("phone") String phone,@RequestParam("callback") String jsonpCallback)throws Exception{
             if(StringUtils.isBlank(phone)){
                 throw new Exception("电话号码为空");
@@ -56,7 +56,7 @@ public class VerifyResource {
     /*
     * 生成图形验证码
     * */
-    @RequestMapping(value = "/imageCode",method = RequestMethod.GET)
+    @RequestMapping(value = "/verify/imagecode",method = RequestMethod.GET)
     public void charAndNumCode( HttpServletResponse response) {
         //将ContentType设为"image/jpeg"，让浏览器识别图像格式。
         response.setContentType("image/jpeg");
@@ -84,7 +84,7 @@ public class VerifyResource {
      * @param param {"phone":"","smsCode",""}
      * @return {"message":""success,"content":"验证码正确"}
      * */
-    @RequestMapping(value = "/smsValidate",method = RequestMethod.POST)
+    @RequestMapping(value = "/verify/smsvalidate",method = RequestMethod.POST)
     public ResponseEntity<Object> smsValidate(@NotNull @RequestBody Map param)throws Exception{
             Map result=smsService.smsValidate(param);
             return new ResponseEntity<Object>(result,HttpStatus.OK);
