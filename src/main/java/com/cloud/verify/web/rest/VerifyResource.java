@@ -35,7 +35,7 @@ public class VerifyResource {
     * 发送短信验证码
     * */
     @RequestMapping(value = "/verify/smscode",method = RequestMethod.GET)
-    public ResponseEntity<Object> smsCode(@RequestParam("phone") String phone,@RequestParam("callback") String jsonpCallback)throws Exception{
+    public ResponseEntity<Object> smsCode(@RequestParam("phone") String phone/*,@RequestParam("callback") String jsonpCallback*/)throws Exception{
             if(StringUtils.isBlank(phone)){
                 throw new Exception("电话号码为空");
             }
@@ -43,13 +43,13 @@ public class VerifyResource {
             JSONObject jsonObject=new JSONObject();
             jsonObject.put("content",result.get("content"));
             jsonObject.put("target",result.get("target"));
-            if(StringUtils.isNotBlank(jsonpCallback)){//处理jsonp跨域
+            /*if(StringUtils.isNotBlank(jsonpCallback)){//处理jsonp跨域
                 String jsonpData=jsonpCallback+"("+jsonObject+")";
                 return ResponseEntity.ok()
                     .header("Access-Control-Allow-Origin","*")
                     .header("Content-Type","application/x-javascript;charset=UTF-8")
                     .body(jsonpData);
-            }
+            }*/
             return ResponseEntity.status(HttpStatus.OK).body(jsonObject);
     }
 
