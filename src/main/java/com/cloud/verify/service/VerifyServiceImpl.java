@@ -1,25 +1,18 @@
-package com.cloud.verify.service.Sms;
+package com.cloud.verify.service;
 
 import com.cloud.verify.config.SmsConstents;
 import com.cloud.verify.web.rest.util.VerifyCodeUtil;
-import org.apache.commons.lang.StringUtils;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.awt.image.BufferedImage;
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class SmsServiceImpl implements SmsServiceI{
+public class VerifyServiceImpl implements VerifyService {
 
     @Autowired
     FeignSmsClient feignSmsClient;
@@ -52,22 +45,21 @@ public class SmsServiceImpl implements SmsServiceI{
      }
 
     @Override
-    public Map smsValidate(Map param) throws Exception {
+    public Map smsValidate(String phone,String smsCode) throws Exception {
          String flag="failed";
          String content="";
-         Object smsCode=redisTemplate.boundValueOps("sms_"+param.get("phone")).get();
-         String currentSmsCode=param.get("smsCode").toString();
-         param.clear();
+         Object code=redisTemplate.boundValueOps("sms_"+phone).get();
          if (smsCode==null){
              content= SmsConstents.SMS_VALIDATE_TIMEOUT;
          }else {
-             if (!smsCode.equals(currentSmsCode)){
+             if (!smsCode.equals(code)){
                  content=SmsConstents.SMS_VALIDATE_WRONG;
              }else {
                  flag="success";
                  content=SmsConstents.SMS_VALIDATE_RIGHT;
              }
          }
+         Map param=new HashMap();
          param.put("message",flag);
          param.put("content",content);
          return param;

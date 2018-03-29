@@ -1,9 +1,9 @@
-package com.cloud.verify.service.Sms;
+package com.cloud.verify.service;
 
 import java.awt.image.BufferedImage;
 import java.util.Map;
 
-public interface SmsServiceI {
+public interface VerifyService {
 
     /**
      * 发送给手机验证码并保存
@@ -17,5 +17,5 @@ public interface SmsServiceI {
      * */
     public BufferedImage getImage();
 
-    public Map smsValidate(Map param)throws Exception;
+    public Map smsValidate(String phone,String smsCode)throws Exception;
 }

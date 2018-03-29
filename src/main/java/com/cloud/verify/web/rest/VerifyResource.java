@@ -1,19 +1,13 @@
 package com.cloud.verify.web.rest;
 
-import com.cloud.verify.service.Sms.SmsServiceI;
-
-
-import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.cloud.verify.service.VerifyService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.spring.web.json.Json;
 
 
 import javax.imageio.ImageIO;
@@ -29,34 +23,31 @@ public class VerifyResource {
     private static final Logger LOGGER= LoggerFactory.getLogger(VerifyResource.class);
 
     @Autowired
-    SmsServiceI smsService;
+    VerifyService verifyService;
 
     /*
     * 发送短信验证码
     * */
-    @RequestMapping(value = "/verify/smscode",method = RequestMethod.GET)
-    public ResponseEntity<Object> smsCode(@RequestParam("phone") String phone/*,@RequestParam("callback") String jsonpCallback*/)throws Exception{
-            if(StringUtils.isBlank(phone)){
-                throw new Exception("电话号码为空");
-            }
-            Map result=smsService.initAndSendSmsCode(phone);
-            JSONObject jsonObject=new JSONObject();
+    @GetMapping("/verify/smscode")
+    public ResponseEntity smsCode(@NotNull @RequestParam("phone") String phone/*,@RequestParam("callback") String jsonpCallback*/)throws Exception{
+            Map result=verifyService.initAndSendSmsCode(phone);
+           /* if(StringUtils.isNotBlank(jsonpCallback)){//处理jsonp跨域
+           JSONObject jsonObject=new JSONObject();
             jsonObject.put("content",result.get("content"));
             jsonObject.put("target",result.get("target"));
-            /*if(StringUtils.isNotBlank(jsonpCallback)){//处理jsonp跨域
                 String jsonpData=jsonpCallback+"("+jsonObject+")";
                 return ResponseEntity.ok()
                     .header("Access-Control-Allow-Origin","*")
                     .header("Content-Type","application/x-javascript;charset=UTF-8")
                     .body(jsonpData);
             }*/
-            return ResponseEntity.status(HttpStatus.OK).body(jsonObject);
+           return ResponseEntity.ok().body(result);
     }
 
     /*
     * 生成图形验证码
     * */
-    @RequestMapping(value = "/verify/imagecode",method = RequestMethod.GET)
+    @GetMapping("/verify/imagecode")
     public void charAndNumCode( HttpServletResponse response) {
         //将ContentType设为"image/jpeg"，让浏览器识别图像格式。
         response.setContentType("image/jpeg");
@@ -67,7 +58,7 @@ public class VerifyResource {
 
         try {
             //获得验证码的图像数据
-            BufferedImage bi = smsService.getImage();
+            BufferedImage bi = verifyService.getImage();
             //获得Servlet输出流
             ServletOutputStream outStream = response.getOutputStream();
             ImageIO.write(bi, "jpeg", outStream);
@@ -81,12 +72,12 @@ public class VerifyResource {
     }
 
     /**短信验证
-     * @param param {"phone":"","smsCode",""}
+     * @param  {"phone":"","smsCode",""}
      * @return {"message":""success,"content":"验证码正确"}
      * */
-    @RequestMapping(value = "/verify/smsvalidate",method = RequestMethod.POST)
-    public ResponseEntity<Object> smsValidate(@NotNull @RequestBody Map param)throws Exception{
-            Map result=smsService.smsValidate(param);
-            return new ResponseEntity<Object>(result,HttpStatus.OK);
+    @GetMapping("/verify/smsvalidate")
+    public ResponseEntity<Map> smsValidate(@RequestParam("phone") String phone,@RequestParam("smsCode") String smsCode )throws Exception{
+            Map result=verifyService.smsValidate(phone,smsCode);
+            return new ResponseEntity<Map>(result,HttpStatus.OK);
     }
 }
