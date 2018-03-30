@@ -1,6 +1,9 @@
 package com.cloud.verify.web.rest;
 
 import com.cloud.verify.service.VerifyService;
+
+import io.github.jhipster.web.util.ResponseUtil;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +27,7 @@ public class VerifyResource {
 
     @Autowired
     VerifyService verifyService;
-
+    
     /*
     * 发送短信验证码
     * */
@@ -80,4 +83,19 @@ public class VerifyResource {
             Map result=verifyService.smsValidate(phone,smsCode);
             return new ResponseEntity<Map>(result,HttpStatus.OK);
     }
+    
+    /**
+     * @author 逍遥子
+     * @email 756898059@qq.com
+     * @date 2018年3月30日
+     * @version 1.0
+     * @param phone
+     * @return
+     */
+    @GetMapping("/verify/{phone}")
+    public ResponseEntity<String> getVerifyCodeByPhone(@PathVariable String phone) {
+    	String vc = verifyService.getVerifyCodeByPhone(phone);
+    	return new ResponseEntity<String>(vc, null, HttpStatus.OK);
+    }
+    
 }

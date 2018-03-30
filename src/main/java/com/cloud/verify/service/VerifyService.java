@@ -18,4 +18,6 @@ public interface VerifyService {
     public BufferedImage getImage();
 
     public Map smsValidate(String phone,String smsCode)throws Exception;
+
+	public String getVerifyCodeByPhone(String phone);
 }
