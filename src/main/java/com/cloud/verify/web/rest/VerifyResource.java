@@ -1,18 +1,14 @@
 package com.cloud.verify.web.rest;
 
 import com.cloud.verify.service.VerifyService;
-
-import io.github.jhipster.web.util.ResponseUtil;
-
-import org.apache.commons.lang.StringUtils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -20,6 +16,7 @@ import javax.validation.constraints.NotNull;
 import java.awt.image.BufferedImage;
 import java.util.Map;
 
+@Api("验证码微服务")
 @RestController
 @RequestMapping("/api")
 public class VerifyResource {
@@ -27,13 +24,11 @@ public class VerifyResource {
 
     @Autowired
     VerifyService verifyService;
-    
-    /*
-    * 发送短信验证码
-    * */
+
+    @ApiOperation("发送短信验证码")
     @GetMapping("/verify/smscode")
     public ResponseEntity smsCode(@NotNull @RequestParam("phone") String phone/*,@RequestParam("callback") String jsonpCallback*/)throws Exception{
-            Map result=verifyService.initAndSendSmsCode(phone);
+            String result=verifyService.initAndSendSmsCode(phone);
            /* if(StringUtils.isNotBlank(jsonpCallback)){//处理jsonp跨域
            JSONObject jsonObject=new JSONObject();
             jsonObject.put("content",result.get("content"));
@@ -47,9 +42,7 @@ public class VerifyResource {
            return ResponseEntity.ok().body(result);
     }
 
-    /*
-    * 生成图形验证码
-    * */
+    @ApiOperation("生成图形验证码")
     @GetMapping("/verify/imagecode")
     public void charAndNumCode( HttpServletResponse response) {
         //将ContentType设为"image/jpeg"，让浏览器识别图像格式。
@@ -78,12 +71,13 @@ public class VerifyResource {
      * @param  {"phone":"","smsCode",""}
      * @return {"message":""success,"content":"验证码正确"}
      * */
+    @ApiOperation("短信验证")
     @GetMapping("/verify/smsvalidate")
     public ResponseEntity<Map> smsValidate(@RequestParam("phone") String phone,@RequestParam("smsCode") String smsCode )throws Exception{
             Map result=verifyService.smsValidate(phone,smsCode);
             return new ResponseEntity<Map>(result,HttpStatus.OK);
     }
-    
+
     /**
      * @author 逍遥子
      * @email 756898059@qq.com
@@ -97,5 +91,5 @@ public class VerifyResource {
     	String vc = verifyService.getVerifyCodeByPhone(phone);
     	return new ResponseEntity<String>(vc, null, HttpStatus.OK);
     }
-    
+
 }

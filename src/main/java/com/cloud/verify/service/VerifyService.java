@@ -9,7 +9,7 @@ public interface VerifyService {
      * 发送给手机验证码并保存
      * @return 生成的图像数据
      * */
-    public Map initAndSendSmsCode(String phone)throws Exception;
+    public String initAndSendSmsCode(String phone);
 
     /**
      * 生成指定字符串的图像数据
@@ -17,7 +17,7 @@ public interface VerifyService {
      * */
     public BufferedImage getImage();
 
-    public Map smsValidate(String phone,String smsCode)throws Exception;
+    public Map smsValidate(String phone, String smsCode)throws Exception;
 
 	public String getVerifyCodeByPhone(String phone);
 }

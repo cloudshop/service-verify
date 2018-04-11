@@ -22,15 +22,20 @@ public class VerifyServiceImpl implements VerifyService {
     RedisTemplate redisTemplate;
     Integer expiresSecond=300;
 
-    public Map initAndSendSmsCode(String phone)throws Exception{
-        String  smsCode=String.valueOf((int)((Math.random()*9+1)*100000));//六位数字短信验证码
-        Map param=new HashMap();
-        param.put("content",smsCode);
-        param.put("target",phone);
-        String key="sms_"+phone;
-        Map result=feignSmsClient.SendSmsCode(param);
-        redisTemplate.boundValueOps(key).set(smsCode,expiresSecond.intValue(), TimeUnit.SECONDS);//验证码5分钟超时
-        return param;
+    public String initAndSendSmsCode(String phone){
+        try {
+            String  smsCode=String.valueOf((int)((Math.random()*9+1)*100000));//六位数字短信验证码
+            Map param=new HashMap();
+            param.put("content",smsCode);
+            param.put("target",phone);
+            String key="sms_"+phone;
+            feignSmsClient.SendSmsCode(param);
+            redisTemplate.boundValueOps(key).set(smsCode,expiresSecond.intValue(), TimeUnit.SECONDS);//验证码5分钟超时
+            return "success";
+        }catch (Exception e){
+            e.printStackTrace();
+            return "failed";
+        }
     }
 
     /**
