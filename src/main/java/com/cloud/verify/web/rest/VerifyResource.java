@@ -1,6 +1,7 @@
 package com.cloud.verify.web.rest;
 
 import com.cloud.verify.service.VerifyService;
+import io.github.jhipster.web.util.ResponseUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -14,7 +15,9 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 import java.awt.image.BufferedImage;
+import java.net.URI;
 import java.util.Map;
+import java.util.Optional;
 
 @Api("验证码微服务")
 @RestController
@@ -28,7 +31,8 @@ public class VerifyResource {
     @ApiOperation("发送短信验证码")
     @GetMapping("/verify/smscode")
     public ResponseEntity smsCode(@NotNull @RequestParam("phone") String phone/*,@RequestParam("callback") String jsonpCallback*/)throws Exception{
-            String result=verifyService.initAndSendSmsCode(phone);
+                String result=verifyService.initAndSendSmsCode(phone);
+                return ResponseUtil.wrapOrNotFound(Optional.ofNullable(result));
            /* if(StringUtils.isNotBlank(jsonpCallback)){//处理jsonp跨域
            JSONObject jsonObject=new JSONObject();
             jsonObject.put("content",result.get("content"));
@@ -39,7 +43,6 @@ public class VerifyResource {
                     .header("Content-Type","application/x-javascript;charset=UTF-8")
                     .body(jsonpData);
             }*/
-           return ResponseEntity.ok().body(result);
     }
 
     @ApiOperation("生成图形验证码")
