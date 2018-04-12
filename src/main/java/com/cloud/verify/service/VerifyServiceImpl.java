@@ -67,7 +67,8 @@ public class VerifyServiceImpl implements VerifyService {
 
 	@Override
 	public String getVerifyCodeByPhone(String phone) {
-		Object code=redisTemplate.boundValueOps("sms_"+phone).get();
+		Object code = redisTemplate.opsForValue().get("sms_"+phone);
+		//Object code=redisTemplate.boundValueOps("sms_"+phone).get();
 		return code==null? "":code.toString();
 	}
 
