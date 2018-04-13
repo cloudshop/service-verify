@@ -23,11 +23,15 @@ public class VerifyServiceImpl implements VerifyService {
     Integer expiresSecond=300;
 
     public String initAndSendSmsCode(String phone)throws Exception{
+            String key="sms_"+phone;
+            Object code=redisTemplate.boundValueOps(key).get();
+            if (code!=null){
+                return "failed!验证码已发送";
+            }
             String  smsCode=String.valueOf((int)((Math.random()*9+1)*100000));//六位数字短信验证码
             Map param=new HashMap();
             param.put("content",smsCode);
             param.put("target",phone);
-            String key="sms_"+phone;
             feignSmsClient.SendSmsCode(param);
             redisTemplate.boundValueOps(key).set(smsCode,expiresSecond.intValue(), TimeUnit.SECONDS);//验证码5分钟超时
             return "success";
