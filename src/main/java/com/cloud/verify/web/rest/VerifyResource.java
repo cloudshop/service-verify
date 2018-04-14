@@ -28,10 +28,11 @@ public class VerifyResource {
     @Autowired
     VerifyService verifyService;
 
-    @ApiOperation("发送短信验证码")
-    @GetMapping("/verify/smscode")
-    public ResponseEntity smsCode(@NotNull @RequestParam("phone") String phone/*,@RequestParam("callback") String jsonpCallback*/)throws Exception{
-                String result=verifyService.initAndSendSmsCode(phone);
+    @ApiOperation("注册发送短信验证码")
+    @GetMapping("/verify/smscode/registe")
+    public ResponseEntity smsCodeRegiste(@NotNull @RequestParam("phone") String phone/*,@RequestParam("callback") String jsonpCallback*/)throws Exception{
+                String key="gongrong_verify_register_code_{"+phone+"}";
+                String result=verifyService.smsCodeRegiste(key,phone);
                 return ResponseUtil.wrapOrNotFound(Optional.ofNullable(result));
            /* if(StringUtils.isNotBlank(jsonpCallback)){//处理jsonp跨域
            JSONObject jsonObject=new JSONObject();

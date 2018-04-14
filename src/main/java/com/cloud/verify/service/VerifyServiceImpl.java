@@ -22,11 +22,10 @@ public class VerifyServiceImpl implements VerifyService {
     RedisTemplate redisTemplate;
     Integer expiresSecond=300;
 
-    public String initAndSendSmsCode(String phone)throws Exception{
-            String key="sms_"+phone;
+    public String smsCodeRegiste(String key,String phone)throws Exception{
             Object code=redisTemplate.boundValueOps(key).get();
             if (code!=null){
-                return "failed!验证码已发送";
+                return "failed! 验证码已发送";
             }
             String  smsCode=String.valueOf((int)((Math.random()*9+1)*100000));//六位数字短信验证码
             Map param=new HashMap();
