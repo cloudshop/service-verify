@@ -108,7 +108,7 @@ public class VerifyResource {
      * @param
      * @return
      */
-    @ApiOperation("获取用户修改侨胞密码的短信验证码")
+    @ApiOperation("获取用户修改钱包密码的短信验证码")
     @GetMapping("/verify/wallet")
     public ResponseEntity<String> getVerifyCodeByPhone() throws Exception{
        UserDTO userDTO=uaaService.getAccount();
