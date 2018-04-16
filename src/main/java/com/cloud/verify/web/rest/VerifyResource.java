@@ -64,6 +64,18 @@ public class VerifyResource {
         return ResponseUtil.wrapOrNotFound(Optional.ofNullable(result));
     }
 
+    @ApiOperation("设置支付密码发送短信验证码")
+    @GetMapping("/verify/smscode/pay")
+    public ResponseEntity smsCodePay()throws Exception{
+        UserDTO userDTO=uaaService.getAccount();
+        if (userDTO==null){
+            throw new Exception("获取当前登陆用户失败");
+        }
+        String phone=userDTO.getLogin();
+        String key="gongrong_verify_pay_code_{"+phone+"}";
+        String result=verifyService.smsCodeRegiste(key,phone);
+        return ResponseUtil.wrapOrNotFound(Optional.ofNullable(result));
+    }
     @ApiOperation("生成图形验证码")
     @GetMapping("/verify/imagecode")
     public void charAndNumCode( HttpServletResponse response) {
