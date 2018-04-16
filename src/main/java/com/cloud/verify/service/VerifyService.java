@@ -18,5 +18,5 @@ public interface VerifyService {
 
     public Map smsValidate(String phone, String smsCode)throws Exception;
 
-	public String getVerifyCodeByPhone(String phone);
+	public String getVerifyCodeWallet(String key);
 }

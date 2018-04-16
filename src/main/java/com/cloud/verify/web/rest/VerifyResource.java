@@ -1,5 +1,7 @@
 package com.cloud.verify.web.rest;
 
+import com.cloud.verify.service.UaaService;
+import com.cloud.verify.service.UserDTO;
 import com.cloud.verify.service.VerifyService;
 import io.github.jhipster.web.util.ResponseUtil;
 import io.swagger.annotations.Api;
@@ -28,6 +30,9 @@ public class VerifyResource {
     @Autowired
     VerifyService verifyService;
 
+    @Autowired
+    UaaService uaaService;
+
     @ApiOperation("注册发送短信验证码")
     @GetMapping("/verify/smscode/registe")
     public ResponseEntity smsCodeRegiste(@NotNull @RequestParam("phone") String phone/*,@RequestParam("callback") String jsonpCallback*/)throws Exception{
@@ -44,6 +49,19 @@ public class VerifyResource {
                     .header("Content-Type","application/x-javascript;charset=UTF-8")
                     .body(jsonpData);
             }*/
+    }
+
+    @ApiOperation("修改钱包密码发送短信验证码")
+    @GetMapping("/verify/smscode/wallet")
+    public ResponseEntity smsCodeWallet()throws Exception{
+        UserDTO userDTO=uaaService.getAccount();
+        if (userDTO==null){
+            throw new Exception("获取当前登陆用户失败");
+        }
+        String phone=userDTO.getLogin();
+        String key="gongrong_verify_wallet_code_{"+phone+"}";
+        String result=verifyService.smsCodeRegiste(key,phone);
+        return ResponseUtil.wrapOrNotFound(Optional.ofNullable(result));
     }
 
     @ApiOperation("生成图形验证码")
@@ -87,13 +105,19 @@ public class VerifyResource {
      * @email 756898059@qq.com
      * @date 2018年3月30日
      * @version 1.0
-     * @param phone
+     * @param
      * @return
      */
-    @GetMapping("/verify/{phone}")
-    public ResponseEntity<String> getVerifyCodeByPhone(@PathVariable String phone) {
-    	String vc = verifyService.getVerifyCodeByPhone(phone);
-    	return new ResponseEntity<String>(vc, null, HttpStatus.OK);
+    @ApiOperation("获取用户修改侨胞密码的短信验证码")
+    @GetMapping("/verify/wallet")
+    public ResponseEntity<String> getVerifyCodeByPhone() throws Exception{
+       UserDTO userDTO=uaaService.getAccount();
+       if (userDTO==null){
+           throw new Exception("获取当前登陆用户失败");
+       }
+       String phone=userDTO.getLogin();
+       String key="gongrong_verify_wallet_code_{"+phone+"}";
+       String vc = verifyService.getVerifyCodeWallet(key);
+       return new ResponseEntity<String>(vc, null, HttpStatus.OK);
     }
-
 }

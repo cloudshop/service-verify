@@ -21,7 +21,6 @@ public class VerifyServiceImpl implements VerifyService {
     @Autowired
     RedisTemplate redisTemplate;
     Integer expiresSecond=300;
-
     public String smsCodeRegiste(String key,String phone)throws Exception{
             Object code=redisTemplate.boundValueOps(key).get();
             if (code!=null){
@@ -49,8 +48,8 @@ public class VerifyServiceImpl implements VerifyService {
 
     @Override
     public Map smsValidate(String phone,String smsCode) throws Exception {
-         String flag="failed";
          String content="";
+         String flag="failed";
          Object code=redisTemplate.boundValueOps("sms_"+phone).get();
          if (smsCode==null){
              content= SmsConstents.SMS_VALIDATE_TIMEOUT;
@@ -69,8 +68,8 @@ public class VerifyServiceImpl implements VerifyService {
     }
 
 	@Override
-	public String getVerifyCodeByPhone(String phone) {
-		Object code = redisTemplate.opsForValue().get("sms_"+phone);
+	public String getVerifyCodeWallet(String key) {
+		Object code = redisTemplate.opsForValue().get(key);
 		//Object code=redisTemplate.boundValueOps("sms_"+phone).get();
 		return code==null? "":code.toString();
 	}
