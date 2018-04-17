@@ -16,7 +16,7 @@ public interface VerifyService {
      * */
     public BufferedImage getImage();
 
-    public Map smsValidate(String phone, String type,String smsCode)throws Exception;
+    public Map smsValidate(String phone, /*String type,*/String smsCode)throws Exception;
 
 	public String getVerifyCode(String key);
 

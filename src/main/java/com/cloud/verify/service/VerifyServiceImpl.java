@@ -47,7 +47,7 @@ public class VerifyServiceImpl implements VerifyService {
      }
 
     @Override
-    public Map smsValidate(String phone,String type,String smsCode) throws Exception {
+    public Map smsValidate(String phone,/*String type,*/String smsCode) throws Exception {
          String content="";
          String flag="failed";
          String key="gongrong_verify_register_code_{"+phone+"}";
