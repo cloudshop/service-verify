@@ -50,7 +50,8 @@ public class VerifyServiceImpl implements VerifyService {
     public Map smsValidate(String phone,String type,String smsCode) throws Exception {
          String content="";
          String flag="failed";
-         String key="gongrong_verify_"+type+"_code_{"+phone+"}";
+         String key="gongrong_verify_register_code_{"+phone+"}";
+         //String key="gongrong_verify_"+type+"_code_{"+phone+"}";
          Object code=redisTemplate.boundValueOps(key).get();
          if (smsCode==null){
              content= SmsConstents.SMS_VALIDATE_TIMEOUT;
