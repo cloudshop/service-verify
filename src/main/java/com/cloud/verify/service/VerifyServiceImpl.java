@@ -20,7 +20,7 @@ public class VerifyServiceImpl implements VerifyService {
     VerifyCodeUtil verifyCodeUtil;
     @Autowired
     RedisTemplate redisTemplate;
-    Integer expiresSecond=300;
+    Integer expiresSecond=120;
     public String smsCodeRegiste(String key,String phone)throws Exception{
             Object code=redisTemplate.boundValueOps(key).get();
             if (code!=null){
@@ -31,7 +31,7 @@ public class VerifyServiceImpl implements VerifyService {
             param.put("content",smsCode);
             param.put("target",phone);
             feignSmsClient.SendSmsCode(param);
-            redisTemplate.boundValueOps(key).set(smsCode,expiresSecond.intValue(), TimeUnit.SECONDS);//验证码5分钟超时
+            redisTemplate.boundValueOps(key).set(smsCode,expiresSecond.intValue(), TimeUnit.SECONDS);//验证码2分钟超时
             return "success";
     }
 
@@ -50,7 +50,8 @@ public class VerifyServiceImpl implements VerifyService {
     public Map smsValidate(String phone,String smsCode) throws Exception {
          String content="";
          String flag="failed";
-         Object code=redisTemplate.boundValueOps("sms_"+phone).get();
+         String key="gongrong_verify_register_code_{"+phone+"}";
+         Object code=redisTemplate.boundValueOps(key).get();
          if (smsCode==null){
              content= SmsConstents.SMS_VALIDATE_TIMEOUT;
          }else {
