@@ -91,12 +91,13 @@ public class VerifyResource {
 
     /**短信验证
      * @param  {"phone":"","smsCode",""}
+     * type:register(注册) wallet(修改钱包密码)
      * @return {"message":""success,"content":"验证码正确"}
      * */
     @ApiOperation("短信验证")
-    @GetMapping("/verify/smsvalidate")
-    public ResponseEntity<Map> smsValidate(@RequestParam("phone") String phone,@RequestParam("smsCode") String smsCode )throws Exception{
-            Map result=verifyService.smsValidate(phone,smsCode);
+    @GetMapping("/verify/smsvalidate/{type}")
+    public ResponseEntity<Map> smsValidate(@RequestParam("phone") String phone,@PathVariable("type") String type,@RequestParam("smsCode") String smsCode )throws Exception{
+            Map result=verifyService.smsValidate(phone,type,smsCode);
             return new ResponseEntity<Map>(result,HttpStatus.OK);
     }
 
@@ -110,14 +111,22 @@ public class VerifyResource {
      */
     @ApiOperation("获取用户修改钱包密码的短信验证码")
     @GetMapping("/verify/wallet")
-    public ResponseEntity<String> getVerifyCodeByPhone() throws Exception{
+    public ResponseEntity<String> getVerifyWallet() throws Exception{
        UserDTO userDTO=uaaService.getAccount();
        if (userDTO==null){
            throw new Exception("获取当前登陆用户失败");
        }
        String phone=userDTO.getLogin();
        String key="gongrong_verify_wallet_code_{"+phone+"}";
-       String vc = verifyService.getVerifyCodeWallet(key);
+       String vc = verifyService.getVerifyCode(key);
        return new ResponseEntity<String>(vc, null, HttpStatus.OK);
+    }
+
+    @ApiOperation("获取用户注册时发送的短信验证码")
+    @GetMapping("/verify/{phone}")
+    public ResponseEntity<String> getVerifyCodeRegest(@PathVariable String phone) {
+        String key="gongrong_verify_register_code_{"+phone+"}";
+        String vc = verifyService.getVerifyCode(key);
+        return new ResponseEntity<String>(vc, null, HttpStatus.OK);
     }
 }

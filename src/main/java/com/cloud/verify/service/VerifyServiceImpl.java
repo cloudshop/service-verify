@@ -47,10 +47,10 @@ public class VerifyServiceImpl implements VerifyService {
      }
 
     @Override
-    public Map smsValidate(String phone,String smsCode) throws Exception {
+    public Map smsValidate(String phone,String type,String smsCode) throws Exception {
          String content="";
          String flag="failed";
-         String key="gongrong_verify_register_code_{"+phone+"}";
+         String key="gongrong_verify_"+type+"_code_{"+phone+"}";
          Object code=redisTemplate.boundValueOps(key).get();
          if (smsCode==null){
              content= SmsConstents.SMS_VALIDATE_TIMEOUT;
@@ -69,7 +69,7 @@ public class VerifyServiceImpl implements VerifyService {
     }
 
 	@Override
-	public String getVerifyCodeWallet(String key) {
+	public String getVerifyCode(String key) {
 		Object code = redisTemplate.opsForValue().get(key);
 		//Object code=redisTemplate.boundValueOps("sms_"+phone).get();
 		return code==null? "":code.toString();
