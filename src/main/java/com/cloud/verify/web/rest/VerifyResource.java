@@ -34,7 +34,7 @@ public class VerifyResource {
     UaaService uaaService;
 
     @ApiOperation("注册发送短信验证码")
-    @GetMapping("/verify/smscode/registe")
+    @GetMapping("/verify/smscode")
     public ResponseEntity smsCodeRegiste(@NotNull @RequestParam("phone") String phone/*,@RequestParam("callback") String jsonpCallback*/)throws Exception{
                 String key="gongrong_verify_register_code_{"+phone+"}";
                 String result=verifyService.smsCodeRegiste(key,phone);
