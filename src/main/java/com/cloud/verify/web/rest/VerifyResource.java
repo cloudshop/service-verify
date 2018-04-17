@@ -95,7 +95,7 @@ public class VerifyResource {
      * @return {"message":""success,"content":"验证码正确"}
      * */
     @ApiOperation("短信验证")
-    @GetMapping("/verify/smsvalidate/*/{type}*/")
+    @GetMapping("/verify/smsvalidate")
     public ResponseEntity<Map> smsValidate(@RequestParam("phone") String phone,/*@PathVariable("type") String type,*/@RequestParam("smsCode") String smsCode )throws Exception{
             Map result=verifyService.smsValidate(phone,/*type,*/smsCode);
             return new ResponseEntity<Map>(result,HttpStatus.OK);
