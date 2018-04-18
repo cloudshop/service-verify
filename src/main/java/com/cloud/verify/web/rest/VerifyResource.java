@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -41,10 +43,15 @@ public class VerifyResource {
     @GetMapping("/verify/smscode")
     public ResponseEntity smsCodeRegiste(@NotNull @RequestParam("phone") String phone/*,@RequestParam("callback") String jsonpCallback*/)throws Exception{
     	//判断手机号是否被使用
-    	UserDTO user = uaaService.getUserByLogin(phone);
-    	if (user != null) {
-    		return ResponseEntity.badRequest().headers(HeaderUtil.createAlert("该手机号已被使用", "phone:"+phone)).build();
-    	}
+    	ResponseEntity<UserDTO> userDTO;
+		try {
+			userDTO = uaaService.getUserByLogin(phone);
+			if (userDTO != null) {
+				return ResponseEntity.badRequest().headers(HeaderUtil.createAlert("该手机号已被使用", "phone:"+phone)).build();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
                 String key="gongrong_verify_register_code_{"+phone+"}";
                 String result=verifyService.smsCodeRegiste(key,phone);
                 return ResponseUtil.wrapOrNotFound(Optional.ofNullable(result));
