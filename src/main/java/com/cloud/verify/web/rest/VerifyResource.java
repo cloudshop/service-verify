@@ -3,9 +3,13 @@ package com.cloud.verify.web.rest;
 import com.cloud.verify.service.UaaService;
 import com.cloud.verify.service.UserDTO;
 import com.cloud.verify.service.VerifyService;
+import com.cloud.verify.web.rest.util.HeaderUtil;
+
 import io.github.jhipster.web.util.ResponseUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.undertow.util.BadRequestException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +40,11 @@ public class VerifyResource {
     @ApiOperation("注册发送短信验证码")
     @GetMapping("/verify/smscode")
     public ResponseEntity smsCodeRegiste(@NotNull @RequestParam("phone") String phone/*,@RequestParam("callback") String jsonpCallback*/)throws Exception{
+    	//判断手机号是否被使用
+    	UserDTO user = uaaService.getUserByLogin(phone);
+    	if (user != null) {
+    		return ResponseEntity.badRequest().headers(HeaderUtil.createAlert("该手机号已被使用", "phone:"+phone)).build();
+    	}
                 String key="gongrong_verify_register_code_{"+phone+"}";
                 String result=verifyService.smsCodeRegiste(key,phone);
                 return ResponseUtil.wrapOrNotFound(Optional.ofNullable(result));

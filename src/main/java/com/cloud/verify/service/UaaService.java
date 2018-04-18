@@ -2,9 +2,15 @@ package com.cloud.verify.service;
 
 import com.cloud.verify.client.AuthorizedFeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @AuthorizedFeignClient(name="uaa")
 public interface UaaService {
+	
 	@GetMapping("/api/account")
 	public UserDTO getAccount();
+	
+	@GetMapping("/api/users/{login}")
+	public UserDTO getUserByLogin(@PathVariable("login") String login);
+	
 }
