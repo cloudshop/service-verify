@@ -3,6 +3,7 @@ package com.cloud.verify.web.rest;
 import com.cloud.verify.service.UaaService;
 import com.cloud.verify.service.UserDTO;
 import com.cloud.verify.service.VerifyService;
+import com.cloud.verify.web.rest.errors.LoginAlreadyUsedException;
 import com.cloud.verify.web.rest.util.HeaderUtil;
 
 import io.github.jhipster.web.util.ResponseUtil;
@@ -13,6 +14,7 @@ import io.undertow.util.BadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,15 +45,10 @@ public class VerifyResource {
     @GetMapping("/verify/smscode")
     public ResponseEntity smsCodeRegiste(@NotNull @RequestParam("phone") String phone/*,@RequestParam("callback") String jsonpCallback*/)throws Exception{
     	//判断手机号是否被使用
-    	ResponseEntity<UserDTO> userDTO;
-		try {
-			userDTO = uaaService.getUserByLogin(phone);
-			if (userDTO != null) {
-				return ResponseEntity.badRequest().headers(HeaderUtil.createAlert("该手机号已被使用", "phone:"+phone)).build();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+    	ResponseEntity<UserDTO> resp = uaaService.getUserByLogin(phone);
+    	if (!HttpStatus.NOT_FOUND.equals(resp.getStatusCode())) {
+    		throw new LoginAlreadyUsedException();
+    	}
                 String key="gongrong_verify_register_code_{"+phone+"}";
                 String result=verifyService.smsCodeRegiste(key,phone);
                 return ResponseUtil.wrapOrNotFound(Optional.ofNullable(result));
