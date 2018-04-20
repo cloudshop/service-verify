@@ -49,10 +49,10 @@ public class VerifyResource {
     	if (!HttpStatus.NOT_FOUND.equals(resp.getStatusCode())) {
     		throw new LoginAlreadyUsedException();
     	}
-                String key="gongrong_verify_register_code_{"+phone+"}";
-                String result=verifyService.smsCodeRegiste(key,phone);
-                return ResponseUtil.wrapOrNotFound(Optional.ofNullable(result));
-           /* if(StringUtils.isNotBlank(jsonpCallback)){//处理jsonp跨域
+        String key="gongrong_verify_register_code_{"+phone+"}";
+        String result=verifyService.smsCodeRegiste(key,phone);
+        return ResponseUtil.wrapOrNotFound(Optional.ofNullable(result));
+        /*if(StringUtils.isNotBlank(jsonpCallback)){//处理jsonp跨域
            JSONObject jsonObject=new JSONObject();
             jsonObject.put("content",result.get("content"));
             jsonObject.put("target",result.get("target"));
@@ -61,7 +61,41 @@ public class VerifyResource {
                     .header("Access-Control-Allow-Origin","*")
                     .header("Content-Type","application/x-javascript;charset=UTF-8")
                     .body(jsonpData);
-            }*/
+        }*/
+    }
+
+    @ApiOperation("获取用户注册时发送的短信验证码")
+    @GetMapping("/verify/{phone}")
+    public ResponseEntity<String> getVerifyCodeRegest(@PathVariable String phone) {
+        String key="gongrong_verify_register_code_{"+phone+"}";
+        String vc = verifyService.getVerifyCode(key);
+        return new ResponseEntity<String>(vc, null, HttpStatus.OK);
+    }
+
+    @ApiOperation("修改登陆密码发送短信验证码")
+    @GetMapping("/verify/smscode/login")
+    public ResponseEntity smsCodeLogin()throws Exception{
+        UserDTO userDTO=uaaService.getAccount();
+        if (userDTO==null){
+            throw new Exception("获取当前登陆用户失败");
+        }
+        String phone=userDTO.getLogin();
+        String key="gongrong_verify_login_code_{"+phone+"}";
+        String result=verifyService.smsCodeRegiste(key,phone);
+        return ResponseUtil.wrapOrNotFound(Optional.ofNullable(result));
+    }
+
+    @ApiOperation("获取用户修改登陆密码的短信验证码")
+    @GetMapping("/verify/login")
+    public ResponseEntity<String> getVerifyLogin() throws Exception{
+        UserDTO userDTO=uaaService.getAccount();
+        if (userDTO==null){
+            throw new Exception("获取当前登陆用户失败");
+        }
+        String phone=userDTO.getLogin();
+        String key="gongrong_verify_login_code_{"+phone+"}";
+        String vc = verifyService.getVerifyCode(key);
+        return new ResponseEntity<String>(vc, null, HttpStatus.OK);
     }
 
     @ApiOperation("修改钱包密码发送短信验证码")
@@ -75,6 +109,38 @@ public class VerifyResource {
         String key="gongrong_verify_wallet_code_{"+phone+"}";
         String result=verifyService.smsCodeRegiste(key,phone);
         return ResponseUtil.wrapOrNotFound(Optional.ofNullable(result));
+    }
+    /**
+     * @author 逍遥子
+     * @email 756898059@qq.com
+     * @date 2018年3月30日
+     * @version 1.0
+     * @param
+     * @return
+     */
+    @ApiOperation("获取用户修改钱包密码的短信验证码")
+    @GetMapping("/verify/wallet")
+    public ResponseEntity<String> getVerifyWallet() throws Exception{
+        UserDTO userDTO=uaaService.getAccount();
+        if (userDTO==null){
+            throw new Exception("获取当前登陆用户失败");
+        }
+        String phone=userDTO.getLogin();
+        String key="gongrong_verify_wallet_code_{"+phone+"}";
+        String vc = verifyService.getVerifyCode(key);
+        return new ResponseEntity<String>(vc, null, HttpStatus.OK);
+    }
+
+    /**短信验证
+     * @param  {"phone":"","smsCode",""}
+     * type:register(注册) wallet(修改钱包密码)
+     * @return {"message":""success,"content":"验证码正确"}
+     * */
+    @ApiOperation("短信验证")
+    @GetMapping("/verify/smsvalidate")
+    public ResponseEntity<Map> smsValidate(@RequestParam("phone") String phone,/*@PathVariable("type") String type,*/@RequestParam("smsCode") String smsCode )throws Exception{
+            Map result=verifyService.smsValidate(phone,/*type,*/smsCode);
+            return new ResponseEntity<Map>(result,HttpStatus.OK);
     }
 
     @ApiOperation("生成图形验证码")
@@ -100,46 +166,5 @@ public class VerifyResource {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    /**短信验证
-     * @param  {"phone":"","smsCode",""}
-     * type:register(注册) wallet(修改钱包密码)
-     * @return {"message":""success,"content":"验证码正确"}
-     * */
-    @ApiOperation("短信验证")
-    @GetMapping("/verify/smsvalidate")
-    public ResponseEntity<Map> smsValidate(@RequestParam("phone") String phone,/*@PathVariable("type") String type,*/@RequestParam("smsCode") String smsCode )throws Exception{
-            Map result=verifyService.smsValidate(phone,/*type,*/smsCode);
-            return new ResponseEntity<Map>(result,HttpStatus.OK);
-    }
-
-    /**
-     * @author 逍遥子
-     * @email 756898059@qq.com
-     * @date 2018年3月30日
-     * @version 1.0
-     * @param
-     * @return
-     */
-    @ApiOperation("获取用户修改钱包密码的短信验证码")
-    @GetMapping("/verify/wallet")
-    public ResponseEntity<String> getVerifyWallet() throws Exception{
-       UserDTO userDTO=uaaService.getAccount();
-       if (userDTO==null){
-           throw new Exception("获取当前登陆用户失败");
-       }
-       String phone=userDTO.getLogin();
-       String key="gongrong_verify_wallet_code_{"+phone+"}";
-       String vc = verifyService.getVerifyCode(key);
-       return new ResponseEntity<String>(vc, null, HttpStatus.OK);
-    }
-
-    @ApiOperation("获取用户注册时发送的短信验证码")
-    @GetMapping("/verify/{phone}")
-    public ResponseEntity<String> getVerifyCodeRegest(@PathVariable String phone) {
-        String key="gongrong_verify_register_code_{"+phone+"}";
-        String vc = verifyService.getVerifyCode(key);
-        return new ResponseEntity<String>(vc, null, HttpStatus.OK);
     }
 }
