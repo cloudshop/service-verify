@@ -3,6 +3,7 @@ package com.cloud.verify.web.rest;
 import com.cloud.verify.service.UaaService;
 import com.cloud.verify.service.UserDTO;
 import com.cloud.verify.service.VerifyService;
+import com.cloud.verify.web.rest.errors.BadRequestAlertException;
 import com.cloud.verify.web.rest.errors.LoginAlreadyUsedException;
 import com.cloud.verify.web.rest.util.HeaderUtil;
 
@@ -47,7 +48,7 @@ public class VerifyResource {
     	//判断手机号是否被使用
     	ResponseEntity<UserDTO> resp = uaaService.getUserByLogin(phone);
     	if (!HttpStatus.NOT_FOUND.equals(resp.getStatusCode())) {
-    		throw new LoginAlreadyUsedException();
+    		throw new BadRequestAlertException("这个手机号以被注册", "phone", "phoneexists");
     	}
         String key="gongrong_verify_register_code_{"+phone+"}";
         String result=verifyService.smsCodeRegiste(key,phone);
