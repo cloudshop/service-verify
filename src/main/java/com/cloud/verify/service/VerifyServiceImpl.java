@@ -1,6 +1,7 @@
 package com.cloud.verify.service;
 
 import com.cloud.verify.config.SmsConstents;
+import com.cloud.verify.web.rest.errors.BadRequestAlertException;
 import com.cloud.verify.web.rest.util.VerifyCodeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -24,7 +25,7 @@ public class VerifyServiceImpl implements VerifyService {
     public String smsCodeRegiste(String key,String phone)throws Exception{
             Object code=redisTemplate.boundValueOps(key).get();
             if (code!=null){
-                return "failed! 验证码已发送";
+                throw new BadRequestAlertException("验证码已发送","verifyCode","verifyCodeAllReadySend");
             }
             String  smsCode=String.valueOf((int)((Math.random()*9+1)*100000));//六位数字短信验证码
             Map param=new HashMap();
@@ -76,7 +77,5 @@ public class VerifyServiceImpl implements VerifyService {
 		//Object code=redisTemplate.boundValueOps("sms_"+phone).get();
 		return code==null? "":code.toString();
 	}
-   public static void main(String[]args)throws Exception{
-         System.out.println(String.format("尊敬的会员：您的手机验证码为：%s，工作人员不会索取，请勿泄露。","321321"));
-   }
+
 }

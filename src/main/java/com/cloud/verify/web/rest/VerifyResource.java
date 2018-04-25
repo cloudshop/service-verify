@@ -76,11 +76,6 @@ public class VerifyResource {
     @ApiOperation("修改登陆密码发送短信验证码")
     @GetMapping("/verify/smscode/login/{phone}")
     public ResponseEntity smsCodeLogin(@PathVariable("phone") String phone)throws Exception{
-//        UserDTO userDTO=uaaService.getAccount();
-//        if (userDTO==null){
-//            throw new Exception("获取当前登陆用户失败");
-//        }
-//        String phone=userDTO.getLogin();
         String key="gongrong_verify_login_code_{"+phone+"}";
         String result=verifyService.smsCodeRegiste(key,phone);
         return ResponseUtil.wrapOrNotFound(Optional.ofNullable(result));
@@ -89,11 +84,6 @@ public class VerifyResource {
     @ApiOperation("获取用户修改登陆密码的短信验证码")
     @GetMapping("/verify/login/{phone}")
     public ResponseEntity<String> getVerifyLogin(@PathVariable("phone") String phone) throws Exception{
-//        UserDTO userDTO=uaaService.getAccount();
-//        if (userDTO==null){
-//            throw new Exception("获取当前登陆用户失败");
-//        }
-//        String phone=userDTO.getLogin();
         String key="gongrong_verify_login_code_{"+phone+"}";
         String vc = verifyService.getVerifyCode(key);
         return new ResponseEntity<String>(vc, null, HttpStatus.OK);
@@ -102,9 +92,12 @@ public class VerifyResource {
     @ApiOperation("修改钱包密码发送短信验证码")
     @GetMapping("/verify/smscode/wallet")
     public ResponseEntity smsCodeWallet()throws Exception{
-        UserDTO userDTO=uaaService.getAccount();
-        if (userDTO==null){
-            throw new Exception("获取当前登陆用户失败");
+        UserDTO userDTO=null;
+        try {
+            userDTO=uaaService.getAccount();
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new BadRequestAlertException("获取当前登陆用户失败！","user","userLoginNotFound");
         }
         String phone=userDTO.getLogin();
         String key="gongrong_verify_wallet_code_{"+phone+"}";
@@ -122,9 +115,12 @@ public class VerifyResource {
     @ApiOperation("获取用户修改钱包密码的短信验证码")
     @GetMapping("/verify/wallet")
     public ResponseEntity<String> getVerifyWallet() throws Exception{
-        UserDTO userDTO=uaaService.getAccount();
-        if (userDTO==null){
-            throw new Exception("获取当前登陆用户失败");
+        UserDTO userDTO=null;
+        try {
+            userDTO=uaaService.getAccount();
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new BadRequestAlertException("获取当前登陆用户失败！","user","userLoginNotFound");
         }
         String phone=userDTO.getLogin();
         String key="gongrong_verify_wallet_code_{"+phone+"}";
