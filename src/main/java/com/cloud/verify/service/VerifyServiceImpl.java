@@ -28,7 +28,8 @@ public class VerifyServiceImpl implements VerifyService {
             }
             String  smsCode=String.valueOf((int)((Math.random()*9+1)*100000));//六位数字短信验证码
             Map param=new HashMap();
-            param.put("content",smsCode);
+            String message=String.format("尊敬的会员：您的手机验证码为：%s，工作人员不会索取，请勿泄露。",smsCode);
+            param.put("content",message);
             param.put("target",phone);
             feignSmsClient.SendSmsCode(param);
             redisTemplate.boundValueOps(key).set(smsCode,expiresSecond.intValue(), TimeUnit.SECONDS);//验证码2分钟超时
@@ -75,5 +76,7 @@ public class VerifyServiceImpl implements VerifyService {
 		//Object code=redisTemplate.boundValueOps("sms_"+phone).get();
 		return code==null? "":code.toString();
 	}
-
+   public static void main(String[]args)throws Exception{
+         System.out.println(String.format("尊敬的会员：您的手机验证码为：%s，工作人员不会索取，请勿泄露。","321321"));
+   }
 }
