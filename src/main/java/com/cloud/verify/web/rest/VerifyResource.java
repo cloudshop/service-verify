@@ -76,6 +76,10 @@ public class VerifyResource {
     @ApiOperation("修改登陆密码发送短信验证码")
     @GetMapping("/verify/smscode/login/{phone}")
     public ResponseEntity smsCodeLogin(@PathVariable("phone") String phone)throws Exception{
+        ResponseEntity entity=uaaService.getUserByLogin(phone);
+        if (entity.getStatusCodeValue()==404){
+            throw new BadRequestAlertException("该用户不存在","user","userNotFound");
+        };
         String key="gongrong_verify_login_code_{"+phone+"}";
         String result=verifyService.smsCodeRegiste(key,phone);
         return ResponseUtil.wrapOrNotFound(Optional.ofNullable(result));
