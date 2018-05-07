@@ -48,7 +48,7 @@ public class VerifyResource {
     	//判断手机号是否被使用
     	ResponseEntity<UserDTO> resp = uaaService.getUserByLogin(phone);
     	if (!HttpStatus.NOT_FOUND.equals(resp.getStatusCode())) {
-    		throw new BadRequestAlertException("这个手机号以被注册", "phone", "phoneexists");
+    		throw new BadRequestAlertException("这个手机号已被注册", "phone", "phoneexists");
     	}
         String key="gongrong_verify_register_code_{"+phone+"}";
         String result=verifyService.smsCodeRegiste(key,phone);
