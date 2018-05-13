@@ -24,7 +24,7 @@ eureka:
         prefer-ip-address: true
     client:
         service-url:
-            defaultZone: http://admin:${jhipster.registry.password}@localhost:8761/eureka/
+            defaultZone: http://admin:${jhipster.registry.password}@192.168.1.10:8761/eureka/
 
 spring:
     profiles:
@@ -39,9 +39,9 @@ spring:
         serialization.indent_output: true
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
-        url: jdbc:mysql://localhost:3306/verify?useUnicode=true&characterEncoding=utf8&useSSL=false
+        url: jdbc:mysql://192.168.1.10:3306/sms?useUnicode=true&characterEncoding=utf8&useSSL=false
         username: root
-        password:
+        password: z7eh9n6tvk1fPUB8
         hikari:
             data-source-properties:
                 cachePrepStmts: true
@@ -62,7 +62,7 @@ spring:
             hibernate.cache.use_minimal_puts: true
             hibernate.cache.hazelcast.use_lite_member: true
     mail:
-        host: localhost
+        host: 192.168.1.10
         port: 25
         username:
         password:
@@ -71,11 +71,33 @@ spring:
     thymeleaf:
         cache: false
     zipkin: # Use the "zipkin" Maven profile to have the Spring Cloud Zipkin dependencies
-        base-url: http://localhost:9411
+        base-url: http://192.168.1.10:9411
         enabled: false
         locator:
             discovery:
                 enabled: true
+    # REDIS (RedisProperties)
+      # Redis数据库索引（默认为0）
+    redis:
+      # Redis数据库索引（默认为0）
+        database: 0
+      # Redis服务器地址
+        host: cloud.eyun.online
+      # Redis服务器连接端口
+        port: 6379
+      # Redis服务器连接密码（默认为空） windows环境下有密码报密码错误
+        password:
+      # 连接池最大连接数（使用负值表示没有限制）
+        pool:
+          max-active: 8
+      # 连接池最大阻塞等待时间（使用负值表示没有限制）
+          max-wait: -1
+      # 连接池中的最大空闲连接
+          max-idle: 8
+      # 连接池中的最小空闲连接
+          min-idle: 0
+      # 连接超时时间（毫秒）
+          #timeout: 0
 
 liquibase:
     contexts: dev
@@ -98,7 +120,7 @@ liquibase:
 #        key-alias: verify
 # ===================================================================
 server:
-    port: 8103
+    port: 8132
 
 # ===================================================================
 # JHipster specific properties
@@ -116,7 +138,7 @@ jhipster:
             management-center: # Full reference is available at: http://docs.hazelcast.org/docs/management-center/3.9/manual/html/Deploying_and_Starting.html
                 enabled: false
                 update-interval: 3
-                url: http://localhost:8180/mancenter
+                url: http://192.168.1.10:8180/mancenter
     # CORS is disabled by default on microservices, as you should access them through a gateway.
     # If you want to enable it, please uncomment the configuration below.
     # cors:
@@ -133,13 +155,13 @@ jhipster:
             client-id: internal
             client-secret: internal
     mail: # specific JHipster mail property, for standard properties see MailProperties
-        from: verify@localhost
-        base-url: http://127.0.0.1:8103
+        from: verify@192.168.1.10
+        base-url: http://192.168.1.10:8132
     metrics: # DropWizard Metrics configuration, used by MetricsConfiguration
         jmx.enabled: true
         graphite: # Use the "graphite" Maven profile to have the Graphite dependencies
             enabled: false
-            host: localhost
+            host: 192.168.1.10
             port: 2003
             prefix: verify
         prometheus: # Use the "prometheus" Maven profile to have the Prometheus dependencies
@@ -151,7 +173,7 @@ jhipster:
     logging:
         logstash: # Forward logs to logstash over a socket, used by LoggingConfiguration
             enabled: false
-            host: localhost
+            host: 192.168.1.10
             port: 5000
             queue-size: 512
         spectator-metrics: # Reports Spectator Circuit Breaker metrics in the logs
